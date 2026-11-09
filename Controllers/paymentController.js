@@ -3,7 +3,11 @@ const verifyPaymentSignature = require("../Middleware/verifySignature");
 
 // CREATE ORDER
 const createOrder = async (req, res) => {
+    
     try {
+        console.log("VERIFY PAYMENT API HIT");
+console.log("VERIFY BODY:", req.body);
+
         const { amount } = req.body;
         console.log(amount)
         if (!amount) {
@@ -45,6 +49,9 @@ const createOrder = async (req, res) => {
 // VERIFY PAYMENT
 const verifyPayment = async (req, res) => {
     try {
+                console.log("VERIFY PAYMENT API HIT");
+        console.log("VERIFY BODY:", req.body);
+
         const {
             razorpay_order_id,
             razorpay_payment_id,

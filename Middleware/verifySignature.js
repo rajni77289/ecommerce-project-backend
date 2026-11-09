@@ -5,12 +5,14 @@ const verifyPaymentSignature = ({
   paymentId,
   signature,
 }) => {
+  // console.log("SECRET EXISTS:", !!process.env.RAZORPAY_KEY_SECRET);
+
   const body = `${orderId}|${paymentId}`;
 
   const expectedSignature = crypto
     .createHmac(
       "sha256",
-      process.env.RAZORPAY_KEY_SECRET
+      process.env.TEST_API_SECRET
     )
     .update(body)
     .digest("hex");

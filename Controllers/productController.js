@@ -32,11 +32,12 @@
 //     }
 // }
 // module.exports={createProduct,getAllProducts};
+
+
+// const { default: products } = require("razorpay/dist/types/products");
 const Product = require("../Models/productModel");
 
 const createProduct = async (req, res) => {
-  console.log(req.body)
-  console.log(req.files)
   try {
     const { name, price, oldPrice, rating, reviews, stock, description, category } =
       req.body;
@@ -69,10 +70,35 @@ const createProduct = async (req, res) => {
   }
 };
 
-const getAllProducts = async (req, res) => {
-  const getproduct = await Product.find({});
-  res.json({ message: "fetch", data: getproduct });
-};
+// get All product:-
+// const getAllProducts = async (req, res) => {
+//   const getproduct = await Product.find({});
+//   res.json({ message: "fetch", data: getproduct });
+// };
+const getAllProducts=async(req,res)=>{
+  try{
+    // URL se Search ka sabd leta h 
+const {search}=req.query;
+
+// suruaat me koi filter nhi h es liye product milega
+let filter={};
+
+if(search){
+  filter.name={
+    // product ke name me maching sabd dhundhta h 
+    $regex:search,
+    // kapital and small letter ka koi fark nhi rakhta
+    $options:"i",
+  }
+}
+// data se maching product lata h 
+const products=await Product.find(filter);
+
+res.status(200).json({success:true, data:products})
+  }catch(error){
+res.status(500).json({success:false, message:error.message})
+  }
+}
 
 const getproductBySlug = async (req, res) => {
   // console.log(req.params)
@@ -141,15 +167,13 @@ const deleteProduct = async (req, res) => {
 
 // ------
 const updateProduct = async (req, res) => {
-  console.log(req.params);
   console.log("editttttttt", req.body);
-  console.log("FILES:", req.files);
-
+  console.log("editttttttt", req.files);
   try {
-    const newImages = req.files.map((file) => file.filename);
+    const newImages = req.files?.map(file => file.filename) || []
 
-    const update = await Product.findByIdAndUpdate(
-      req.params.id,
+    const update = await Product.findOneAndUpdate(
+      { _id: req.params.id },
       {
         ...req.body,
         images: newImages
@@ -159,8 +183,8 @@ const updateProduct = async (req, res) => {
 
     console.log("UPDATED:", update);
 
-    res.status(200).json({ success: true, message: "Product Updated Successfully",
-      data: update });
+    // res.status(200).json({ success: true, message: "Product Updated Successfully",
+    //   data: update });
 
   } catch (error) {
     console.log(error);
@@ -169,4 +193,26 @@ const updateProduct = async (req, res) => {
   }
 };
 
-module.exports = { createProduct, getAllProducts, getproductBySlug, getsinglproduct, deleteProduct, updateProduct };
+//  RelatedProduct category
+const RelatedProduct = async (req, res) => {
+  try {
+    const { category, id } = req.params;
+
+    const products = await Product.find({
+      category: category,
+      _id: { $ne: id }
+    }).limit(4);
+
+    res.status(200).json({
+      success: true,
+      data: products
+    });
+
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message
+    });
+  }
+};
+module.exports = { createProduct, getAllProducts, getproductBySlug, getsinglproduct, deleteProduct, updateProduct,RelatedProduct };

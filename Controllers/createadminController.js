@@ -1,5 +1,5 @@
 const CreateAdmin = require("../Models/createadminModel");
-// const bcrypt = require("bcryptjs");
+const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 
 const createadmins = async (req, res) => {
@@ -51,14 +51,14 @@ const adminlogin = async (req, res) => {
       });
     }
 
-    // const isMatch = await bcrypt.compare(password, admins.password);
+    const isMatch = await bcrypt.compare(password, admins.password);
 
-    if (password !== admins.password) {
-      return res.status(400).json({
-        message: "Password Incorrect",
-      });
-    }
-    console.log("JWT_SECRET =", process.env.JWT_SECRET);
+    // if (password !== admins.password) {
+    //   return res.status(400).json({
+    //     message: "Password Incorrect",
+    //   });
+    // }
+    // console.log("JWT_SECRET =", process.env.JWT_SECRET);
 
     const token = jwt.sign(
       {
@@ -73,12 +73,20 @@ const adminlogin = async (req, res) => {
     res.status(200).json({
       success: true,
       token,
-      admin: { id: admins._id, name: admins.name, email: admins.email, },
+      admin: {
+        id: admins._id,
+        name: admins.name,
+        email: admins.email,
+        phone: admins.phone,
+        role: admins.role,
+        image: admins.image,
+      },
     });
   } catch (error) {
     res.status(500).json({
-      message: error.message,
+      message: error,
     });
+    console.log(error.message)
   }
 };
 
@@ -128,16 +136,16 @@ const updateadmin = async (req, res) => {
   console.log(req.file)
   try {
     const id = req.params.id
-   
+
     const EditAdmin = await CreateAdmin.findByIdAndUpdate(
       id,
       {
-        name:req.body.name,
-        image:req.file.filename,
-        email:req.body.email,
-        phone:req.body.phone,
-        role:req.body.role,
-        status:req.body.status,
+        name: req.body.name,
+        image: req.file.filename,
+        email: req.body.email,
+        phone: req.body.phone,
+        role: req.body.role,
+        status: req.body.status,
       },
       { new: true }
     )
@@ -160,16 +168,16 @@ const updateadmin = async (req, res) => {
 //   }
 // }
 
-const profileAdmin=async (req, res)=>{
+const profileAdmin = async (req, res) => {
   console.log(req.body)
-  
-  try{
-    const profiledata=await CreateAdmin.findById(req.user.id)
+
+  try {
+    const profiledata = await CreateAdmin.findById(req.user.id)
     console.log(profiledata);
 
-    res.status(200).json({message:"Profile SuccessFully", data:profiledata})
-  }catch(error){
-        res.status(200).json({ message: "Internal Server Error", error: error.message })
+    res.status(200).json({ message: "Profile SuccessFully", data: profiledata })
+  } catch (error) {
+    res.status(200).json({ message: "Internal Server Error", error: error.message })
 
   }
 }

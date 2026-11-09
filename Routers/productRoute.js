@@ -4,7 +4,8 @@ const { createProduct,
     getproductBySlug,
     getsinglproduct,
     updateProduct,
-    deleteProduct
+    deleteProduct,
+    RelatedProduct
 } = require("../Controllers/productController");
 const { route, all } = require("./userRoute");
 
@@ -17,6 +18,7 @@ router.post("/getslugdatas/:slug", getproductBySlug);
 router.post("/getsinglproduct/:id", getsinglproduct);
 router.post("/updateproduct/:id",updateProduct)
 router.delete("/deleteProduct/:id",deleteProduct)
+router.get("/related/:category/:id", RelatedProduct);
 
 // router.get("/:id", getSingleProduct);
 

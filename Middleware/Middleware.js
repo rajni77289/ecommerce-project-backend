@@ -1,6 +1,8 @@
 const jwt = require("jsonwebtoken");
 
 const protect = async (req, res, next) => {
+    // console.log("PROTECT MIDDLEWARE CALLED");
+
   try {
     let token;
 
@@ -9,8 +11,14 @@ const protect = async (req, res, next) => {
       req.headers.authorization.startsWith("Bearer")
     ) {
       token = req.headers.authorization.split(" ")[1];
+      // console.log("TOKEN RECEIVED:", !!token);
+
 
       const decoded = jwt.verify(token, process.env.JWT_SECRET);
+      console.log("DECODED USER:", decoded);
+      // console.log("AUTH HEADER:", req.headers.authorization);
+
+
 
       req.user = decoded;
 
@@ -21,6 +29,9 @@ const protect = async (req, res, next) => {
       });
     }
   } catch (error) {
+
+      // console.log("TOKEN ERROR:", error.message);
+
     return res.status(401).json({
       message: "Token Failed",
     });

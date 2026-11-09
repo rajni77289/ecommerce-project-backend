@@ -10,6 +10,7 @@ const path = require('path')
 connectDB();
 // ====================================================
 const multer = require("multer");
+const protect = require("./Middleware/Middleware");
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
@@ -26,8 +27,15 @@ const upload = multer({
 });
 // ==============================================
 
+var corsOptions={
+  origin:['https://ecommerce-project-frontend-eta.vercel.app', '  http://localhost:5173/',
+    'https://ecommerce-project-admin-henna.vercel.app/'
+  ],
+    optionsSuccessStatus: 200
+}
 app.use(cors());
 app.use(express.json());
+
 app.use("/uploadimage",express.static(path.join("uploads")))
 // Route call user:-
 app.use("/api/auth",authRoutes);
@@ -40,6 +48,12 @@ app.use("/api/createadmin",upload.single("image"),require("./Routers/createadmin
 
 // payment:-
 app.use("/api/payment", require("./Routers/paymentRoute"));
+
+// Order:-
+app.use("/api/order",require("./Routers/orderRouter"));
+
+// Wishlist---
+app.use("/api/wishlist",require("./Routers/wishlistRouter"));
 
 
 
